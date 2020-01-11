@@ -85,13 +85,11 @@ func createFood(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	vars := mux.Vars(r)
-	name := vars["name"]
-	origin := vars["origin"]
-	taste := vars["taste"]
+	var food Food
+	_ = json.NewDecoder(r.Body).Decode(&food)
 
-	db.Create(&Food{Name: name, Origin: origin, Taste: taste})
-	fmt.Fprintf(w, "Successfuly Created Food Item")
+	db.Create(&Food{Name: food.Name, Origin: food.Origin, Taste: food.Taste})
+
 }
 
 func deleteFood(w http.ResponseWriter, r *http.Request) {
@@ -126,16 +124,16 @@ func updateFood(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id := vars["id"]
-	name := vars["name"]
-	origin := vars["origin"]
-	taste := vars["taste"]
+
+	var Tempfood Food
+	_ = json.NewDecoder(r.Body).Decode(&Tempfood)
 
 	var food Food
 	db.Where("id = ?", id).Find(&food)
 
-	food.Name = name
-	food.Origin = origin
-	food.Taste = taste
+	food.Name = Tempfood.Name
+	food.Origin = Tempfood.Origin
+	food.Taste = Tempfood.Taste
 
 	db.Save(&food)
 
@@ -152,8 +150,8 @@ func main() {
 	// Router Handlers
 	router.HandleFunc("/api/food", getFoods).Methods("GET")
 	router.HandleFunc("/api/food/{id}", getFood).Methods("GET")
-	router.HandleFunc("/api/food/{name}/{origin}/{taste}", createFood).Methods("POST")
-	router.HandleFunc("/api/food/{id}/{name}/{origin}/{taste}", updateFood).Methods("PUT")
+	router.HandleFunc("/api/food/", createFood).Methods("POST")
+	router.HandleFunc("/api/food/{id}/", updateFood).Methods("PUT")
 	router.HandleFunc("/api/food/{id}", deleteFood).Methods("DELETE")
 
 	// Listen
