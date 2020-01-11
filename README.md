@@ -5,6 +5,13 @@
 * [mux](https://github.com/gorilla/mux)
 * [gorm](https://github.com/jinzhu/gorm)
 * [sqlite](https://www.sqlite.org/index.html)
+
+## How To Run
+
+* Install Go,mux,gorm( you can find the installation procedure in the links above )
+* Run **go run server.go**
+* You can choose to delete the food.db and start fresh with an empty database
+
 ****************************************************
 ### Root Url - localhost:8000
 
@@ -27,7 +34,7 @@
 #### Create Food Item
 * **/api/food/** -
   1. JSON Example: { 	"name": "Tea","origin": "China","taste": "10"}
-  2. Method **POST**
+  2. Method - **POST**
 
 #### Delete Food Item by ID
 * **/api/food/{id}** -
