@@ -5,29 +5,35 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
+
+var db *gorm.DB
+var err error
 
 // Food Model
 type Food struct {
-	ID     string `json:"id"`
+	gorm.Model
 	Name   string `json:"name"`
 	Origin string `json:"origin"`
+	Taste  string `json:"taste"`
 }
 
-// Foods Data
-var Foods = []Food{
-	Food{ID: "1", Name: "Biryani", Origin: "Persia"},
-	Food{ID: "2", Name: "Biryani", Origin: "Persia"},
-	Food{ID: "3", Name: "Biryani", Origin: "Persia"},
-	Food{ID: "4", Name: "Biryani", Origin: "Persia"},
-	Food{ID: "5", Name: "Biryani", Origin: "Persia"},
-	Food{ID: "6", Name: "Biryani", Origin: "Persia"},
-	Food{ID: "7", Name: "Biryani", Origin: "Persia"},
+func initialMigration() {
+
+	db, err = gorm.Open("sqlite3", "food.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		panic("Connection to Database Failed")
+	}
+
+	defer db.Close()
+
+	db.AutoMigrate(&Food{})
 }
 
 // Get All Foods
@@ -35,83 +41,119 @@ func getFoods(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Endpoint hit: getFoods")
 
+	db, err = gorm.Open("sqlite3", "food.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		panic("Failed To Retrieve Foods, Database Connection Failed")
+	}
+	defer db.Close()
+
+	var foods []Food
+	db.Find(&foods)
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(Foods)
+	json.NewEncoder(w).Encode(foods)
 }
 
 func getFood(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
-	pars := mux.Vars(r)
+	fmt.Println("Endpoint hit: getFood")
 
-	// Find Food
-	for _, f := range Foods {
-		if pars["id"] == f.ID {
-			json.NewEncoder(w).Encode(f)
-			return
-		}
+	db, err = gorm.Open("sqlite3", "food.db")
+	if err != nil {
+		fmt.Println(err.Error())
+		panic("Failed To Retrieve Food, Database Connection Failed")
 	}
-}
+	defer db.Close()
 
-func createFood(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	var food Food
-	_ = json.NewDecoder(r.Body).Decode(&food)
-
-	food.ID = strconv.Itoa(rand.Intn(1000))
-	Foods = append(Foods, food)
+	db.Where("id = ?", id).Find(&food)
 
 	json.NewEncoder(w).Encode(food)
 }
 
+func createFood(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("Endpoint hit: createFood")
+
+	db, err = gorm.Open("sqlite3", "food.db")
+	if err != nil {
+		panic("Failed To Create Food, Database Connection Failed")
+	}
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	name := vars["name"]
+	origin := vars["origin"]
+	taste := vars["taste"]
+
+	db.Create(&Food{Name: name, Origin: origin, Taste: taste})
+	fmt.Fprintf(w, "Successfuly Created Food Item")
+}
+
 func deleteFood(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
-	pars := mux.Vars(r)
+	fmt.Println("Endpoint hit: deleteFood")
 
-	for i, f := range Foods {
-
-		if pars["id"] == f.ID {
-			Foods = append(Foods[:i], Foods[i+1:]...)
-			break
-		}
+	db, err = gorm.Open("sqlite3", "food.db")
+	if err != nil {
+		panic("Failed To Delete, Database Connection Failed")
 	}
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var food Food
+	db.Where("id = ?", id).Find(&food)
+	db.Delete(&food)
+
+	fmt.Fprintf(w, "Sucessfuly Deleted Food with ID :"+id)
 }
 
 func updateFood(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
-	pars := mux.Vars(r)
+	fmt.Println("Endpoint hit: updateFood")
+
+	db, err = gorm.Open("sqlite3", "food.db")
+	if err != nil {
+		panic("Failed to Update Food, Database Connection Failed")
+	}
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+	name := vars["name"]
+	origin := vars["origin"]
+	taste := vars["taste"]
 
 	var food Food
-	_ = json.NewDecoder(r.Body).Decode(&food)
+	db.Where("id = ?", id).Find(&food)
 
-	for i, f := range Foods {
+	food.Name = name
+	food.Origin = origin
+	food.Taste = taste
 
-		if pars["id"] == f.ID {
+	db.Save(&food)
 
-			var tempID string = Foods[i].ID
-			Foods[i] = food
-			Foods[i].ID = tempID
-
-		}
-	}
-	json.NewEncoder(w).Encode(Foods)
+	fmt.Fprintf(w, "Sucessfuly Updated Food Item with ID: "+id)
 }
 
 // Main Function
 func main() {
 
+	initialMigration()
 	// Router
 	router := mux.NewRouter()
 
 	// Router Handlers
 	router.HandleFunc("/api/food", getFoods).Methods("GET")
 	router.HandleFunc("/api/food/{id}", getFood).Methods("GET")
-	router.HandleFunc("/api/food/", createFood).Methods("POST")
-	router.HandleFunc("/api/food/{id}", updateFood).Methods("PUT")
+	router.HandleFunc("/api/food/{name}/{origin}/{taste}", createFood).Methods("POST")
+	router.HandleFunc("/api/food/{id}/{name}/{origin}/{taste}", updateFood).Methods("PUT")
 	router.HandleFunc("/api/food/{id}", deleteFood).Methods("DELETE")
 
 	// Listen
