@@ -107,9 +107,25 @@ func updateFoodItem(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func deleteFoodItem(w http.ResponseWriter, r *http.Request) {
+	id := r.FormValue("id")
+
+	url := "http://localhost:8000/api/food/delete/" + id
+
+	resp, err := http.Post(url, "application/json", nil)
+
+	if err != nil {
+		fmt.Println("error occured")
+	}
+
+	fmt.Println(resp.Body)
+	http.Redirect(w, r, "/", 301)
+}
+
 func main() {
 
 	http.HandleFunc("/", GetAllFoods)
 	http.HandleFunc("/update", updateFoodItem)
+	http.HandleFunc("/delete", deleteFoodItem)
 	http.ListenAndServe(":8080", nil)
 }

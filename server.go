@@ -185,7 +185,7 @@ func main() {
 	router.HandleFunc("/api/food/{id}", getFood).Methods("GET")
 	router.HandleFunc("/api/food/", createFood).Methods("POST")
 	router.HandleFunc("/api/food/{id}/", updateFood).Methods("POST")
-	router.HandleFunc("/api/food/{id}", deleteFood).Methods("DELETE")
+	router.HandleFunc("/api/food/delete/{id}", deleteFood).Methods("POST")
 
 	// Listen
 	err := http.ListenAndServe(":8000", router)
