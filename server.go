@@ -184,7 +184,7 @@ func main() {
 	router.HandleFunc("/api/food", getFoods).Methods("GET")
 	router.HandleFunc("/api/food/{id}", getFood).Methods("GET")
 	router.HandleFunc("/api/food/", createFood).Methods("POST")
-	router.HandleFunc("/api/food/{id}/", updateFood).Methods("PUT")
+	router.HandleFunc("/api/food/{id}/", updateFood).Methods("POST")
 	router.HandleFunc("/api/food/{id}", deleteFood).Methods("DELETE")
 
 	// Listen

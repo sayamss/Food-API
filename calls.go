@@ -28,7 +28,9 @@ func GetAllFoods(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Endpoint hit: GetAllFoods")
 
-	if r.Method == http.MethodPost {
+	switch r.Method {
+
+	case http.MethodPost:
 
 		newItem := FoodItem{
 			Name:   r.FormValue("name"),
@@ -39,7 +41,7 @@ func GetAllFoods(w http.ResponseWriter, r *http.Request) {
 		requestBody, err := json.Marshal(map[string]string{
 			"name":   newItem.Name,
 			"origin": newItem.Origin,
-			"Taste":  newItem.Taste,
+			"taste":  newItem.Taste,
 		})
 
 		if err != nil {
@@ -55,34 +57,6 @@ func GetAllFoods(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(resp.Body)
 	}
 
-	if r.Method == http.MethodPut {
-
-		id := r.FormValue("id")
-		updateItem := FoodItem{
-			Name:   r.FormValue("name"),
-			Origin: r.FormValue("origin"),
-			Taste:  r.FormValue("taste"),
-		}
-
-		requestBody, err := json.Marshal(map[string]string{
-			"name":   updateItem.Name,
-			"origin": updateItem.Origin,
-			"Taste":  updateItem.Taste,
-		})
-
-		if err != nil {
-			fmt.Println("Error Occured")
-		}
-
-		url := "http://localhost:8000/api/food/" + id
-		resp, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(requestBody))
-
-		if err != nil {
-			fmt.Println("error occured")
-		}
-		fmt.Println(resp.Body)
-
-	}
 	response, err := http.Get("http://localhost:8000/api/food")
 	if err != nil {
 		fmt.Printf("Could Not Fetch Foods, Error: %s", err)
@@ -101,22 +75,41 @@ func GetAllFoods(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateNewFood ...
-func CreateNewFood(w http.ResponseWriter, r *http.Request) {
+func updateFoodItem(w http.ResponseWriter, r *http.Request) {
 
-	templ := template.Must(template.ParseFiles("templates/forms.html"))
-
-	if r.Method != http.MethodPost {
-		templ.Execute(w, nil)
-		return
+	fmt.Println("Endpoint hit: Updating Food Item")
+	id := r.FormValue("id")
+	updateItem := FoodItem{
+		Name:   r.FormValue("name"),
+		Origin: r.FormValue("origin"),
+		Taste:  r.FormValue("taste"),
 	}
 
-	templ.Execute(w, struct{ Success bool }{true})
+	requestBody, err := json.Marshal(map[string]string{
+		"name":   updateItem.Name,
+		"origin": updateItem.Origin,
+		"taste":  updateItem.Taste,
+	})
+
+	if err != nil {
+		fmt.Println("Error Occured")
+	}
+
+	url := "http://localhost:8000/api/food/" + id + "/"
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+
+	if err != nil {
+		fmt.Println("error occured")
+	}
+	fmt.Println(resp.Body)
+	http.Redirect(w, r, "/", 301)
 
 }
 
 func main() {
 
 	http.HandleFunc("/", GetAllFoods)
-	http.HandleFunc("/create", CreateNewFood)
+	http.HandleFunc("/update", updateFoodItem)
 	http.ListenAndServe(":8080", nil)
 }
