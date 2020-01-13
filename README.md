@@ -10,8 +10,12 @@
 
 * Install Go,mux,gorm( you can find the installation procedure in the links above )
 * Run **go run server.go**
+* Run **go run app.go **
+* Go to localhost:8080/home
 * You can choose to delete the food.db and start fresh with an empty database
 
+
+## RestAPI Endpoints
 ****************************************************
 ### Root Url - localhost:8000
 
@@ -37,14 +41,14 @@
   2. Method - **POST**
 
 #### Delete Food Item by ID
-* **/api/food/{id}** -
+* **/api/food/delete{id}** -
   1. Deletes Food Item with the specified ID
-  2. Method - **DELETE**
+  2. Method - **POST**
 
 #### Update Food Item by ID
-* **/api/food/{id}** -
+* **/api/food/{id}/** -
   1. JSON Example: { "name": "IceCream 2", "origin":"Belgium", "taste": "10"}, url - /api/food/1
-  2. Method - **PUT**
+  2. Method - **POST**
 ****************************************************
   
   
