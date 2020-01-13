@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-// Food Model ...
+// FoodItem ...
 type FoodItem struct {
 	ID     int
 	Name   string
@@ -18,45 +18,39 @@ type FoodItem struct {
 	Taste  string
 }
 
-type Data struct {
-	Title string
-	items []FoodItem
-}
-
 // GetAllFoods ...
 func GetAllFoods(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Endpoint hit: GetAllFoods")
 
-	switch r.Method {
+	// Post Request
+	if r.Method == http.MethodPost {
 
-	case http.MethodPost:
-
-		newItem := FoodItem{
-			Name:   r.FormValue("name"),
-			Origin: r.FormValue("origin"),
-			Taste:  r.FormValue("taste"),
-		}
-
+		// Get the values from Form Data
 		requestBody, err := json.Marshal(map[string]string{
-			"name":   newItem.Name,
-			"origin": newItem.Origin,
-			"taste":  newItem.Taste,
+			"name":   r.FormValue("name"),
+			"origin": r.FormValue("origin"),
+			"taste":  r.FormValue("taste"),
 		})
 
+		// Error Check
 		if err != nil {
 			fmt.Println("Error Occured")
+			return
 		}
 
+		// Send the post request with the required Values
 		resp, postErr := http.Post("http://localhost:8000/api/food/", "application/json", bytes.NewBuffer(requestBody))
 
 		if postErr != nil {
 			fmt.Println("Error Occured")
+			return
 		}
 
 		fmt.Println(resp.Body)
 	}
 
+	// Fetch All the Food Items
 	response, err := http.Get("http://localhost:8000/api/food")
 	if err != nil {
 		fmt.Printf("Could Not Fetch Foods, Error: %s", err)
@@ -65,49 +59,57 @@ func GetAllFoods(w http.ResponseWriter, r *http.Request) {
 
 	defer response.Body.Close()
 
+	// Store the Fetched Food Items in an Array
 	var items []FoodItem
 	_ = json.NewDecoder(response.Body).Decode(&items)
 
+	// Template
 	templ := template.Must(template.ParseFiles("templates/home.html"))
 
 	templ.Execute(w, items)
 	return
 }
 
-// CreateNewFood ...
+// updateFoodItem ...
 func updateFoodItem(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Endpoint hit: Updating Food Item")
-	id := r.FormValue("id")
-	updateItem := FoodItem{
-		Name:   r.FormValue("name"),
-		Origin: r.FormValue("origin"),
-		Taste:  r.FormValue("taste"),
-	}
 
+	// Retrieve Food Item ID
+	id := r.FormValue("id")
+
+	// New Values
 	requestBody, err := json.Marshal(map[string]string{
-		"name":   updateItem.Name,
-		"origin": updateItem.Origin,
-		"taste":  updateItem.Taste,
+		"name":   r.FormValue("name"),
+		"origin": r.FormValue("origin"),
+		"taste":  r.FormValue("taste"),
 	})
 
+	// Error Check
 	if err != nil {
 		fmt.Println("Error Occured")
+		return
 	}
 
+	// Specific URL for updating the required Item
 	url := "http://localhost:8000/api/food/" + id + "/"
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
 
 	if err != nil {
 		fmt.Println("error occured")
+		return
 	}
 	fmt.Println(resp.Body)
+
+	// Redirect to Home Page
 	http.Redirect(w, r, "/", 301)
 
 }
 
 func deleteFoodItem(w http.ResponseWriter, r *http.Request) {
+
+	// Send Post request to the URL with id to delete the Item
 	id := r.FormValue("id")
 
 	url := "http://localhost:8000/api/food/delete/" + id
@@ -116,14 +118,18 @@ func deleteFoodItem(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println("error occured")
+		return
 	}
 
 	fmt.Println(resp.Body)
+
+	// Redirect to Home Page
 	http.Redirect(w, r, "/", 301)
 }
 
 func main() {
 
+	// Handler functions
 	http.HandleFunc("/", GetAllFoods)
 	http.HandleFunc("/update", updateFoodItem)
 	http.HandleFunc("/delete", deleteFoodItem)

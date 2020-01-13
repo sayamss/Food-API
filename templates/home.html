@@ -18,6 +18,7 @@
         .create-form-div{
         }
         .submit{
+            width: 77% !important;
             margin-top: 15px;
             margin-left: 15px;
             margin-bottom: 15px;
@@ -36,6 +37,10 @@
             color: black;
             font-weight: bold;
             text-decoration: underline black;
+        }
+        .select{
+            width: 78% !important;
+            margin-left: 15px !important;
         }
     </style>
 </head>
@@ -72,7 +77,7 @@
                                 <input type="text" class="form-control" id="taste" name="taste">
                             </div>
 
-                            <button type="submit" class="btn btn-dark col-sm-9 submit">Submit</button>
+                            <button type="submit" class="btn btn-dark col-sm-10 submit">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -83,7 +88,7 @@
                             <div class="form-group-row">
 
                                 <label for="fooditem" class="col-sm-10 col-form-label">Select Food Item</label>
-                                <select class="form-control col-sm-10" name="id">
+                                <select class="form-control col-sm-10 select" name="id">
                                     {{range .}}
                                     <option value={{.ID}}>{{.Name}}</option>
                                     {{end}}
@@ -104,7 +109,7 @@
                                     <input type="text" class="form-control" id="taste" name="taste">
                                 </div>
     
-                                <button type="submit" class="btn btn-dark col-sm-9 submit">Submit</button>
+                                <button type="submit" class="btn btn-dark col-sm-10 submit">Submit</button>
                             </div>
                         </form>
                     </div>
