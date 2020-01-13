@@ -14,7 +14,6 @@
 * Go to **localhost:8080/home**
 * You can choose to delete the food.db and start fresh with an empty database
 
-
 ## RestAPI Endpoints
 ****************************************************
 ### Root Url - localhost:8000
