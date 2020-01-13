@@ -43,7 +43,7 @@
   2. Method - **POST**
 
 #### Delete Food Item by ID
-* **/api/food/delete{id}** -
+* **/api/food/delete/{id}** -
   1. Deletes Food Item with the specified ID
   2. Method - **POST**
 
