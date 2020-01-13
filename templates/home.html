@@ -1,0 +1,133 @@
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        .title{
+            padding: 20px;
+            color: white;
+            background-color: black;
+        }
+        .create-form-div{
+        }
+        .submit{
+            margin-top: 15px;
+            margin-left: 15px;
+            margin-bottom: 15px;
+            background-color: white !important;
+            color: black;
+            border: 1px solid black;
+        }
+        .submit:hover{
+            background-color: black !important;
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <h1 class="navbar-brand">
+            Food Items API
+        </h1>
+    </nav>
+
+    <div class="container" style="padding:50px;">
+        <div class="row">
+
+            <div class="col-sm " >
+                
+                <div class="create-form-div shadow">
+                    <h2 class="title">Create Food Item</h2>
+                    <form method="POST">
+                        <div class="form-group-row">
+
+                            <label for="name" class="col-sm-2 col-form-label">Name</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+
+                            <label for="origin" class="col-sm-2 col-form-label">Origin</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="origin" name="origin">
+                            </div>
+
+                            <label for="taste" class="col-sm-2 col-form-label">Taste</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="taste" name="taste">
+                            </div>
+
+                            <button type="submit" class="btn btn-dark col-sm-9 submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="create-form-div shadow">
+                        <h2 class="title">Update Food Item</h2>
+                        <form method="PUT">
+                            <div class="form-group-row">
+
+                                <label for="fooditem" class="col-sm-10 col-form-label">Select Food Item</label>
+                                <select class="form-control col-sm-10" name="id">
+                                    {{range .}}
+                                    <option value={{.ID}}>{{.Name}}</option>
+                                    {{end}}
+                                </select>
+
+                                <label for="name" class="col-sm-2 col-form-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+    
+                                <label for="origin" class="col-sm-2 col-form-label">Origin</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="origin" name="origin">
+                                </div>
+    
+                                <label for="taste" class="col-sm-2 col-form-label">Taste</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="taste" name="taste">
+                                </div>
+    
+                                <button type="submit" class="btn btn-dark col-sm-9 submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+            </div>
+            <div class="col-sm">
+                <div class="card shadow">
+                    <h3 class="title">Food Items</h3>
+                    <div>
+                    <table class="table">
+                            <thead>
+                                <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Origin</th>
+                                <th scope="col">Taste</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {{range .}}
+                                <tr>
+                                    <th scope="row">{{.ID}}</th>
+                                    <th>{{.Name}}</th>
+                                    <th>{{.Origin}}</th>
+                                    <th>{{.Taste}}</th>
+                                </tr>
+                                {{end}}
+                            </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

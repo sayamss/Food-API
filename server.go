@@ -16,9 +16,11 @@ import (
 var db *gorm.DB
 var err error
 
+// Model ...
+
 // Food Model
 type Food struct {
-	gorm.Model
+	ID     uint   `gorm:"primary_key"`
 	Name   string `json:"name"`
 	Origin string `json:"origin"`
 	Taste  string `json:"taste"`
