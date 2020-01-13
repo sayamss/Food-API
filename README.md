@@ -14,6 +14,9 @@
 * Go to **localhost:8080/home**
 * You can choose to delete the food.db and start fresh with an empty database
 
+## UI application On **localhost:8080/home** 
+![ScreenShot](https://github.com/sayamss/Food-API/blob/master/screenshot/Screenshot%20from%202020-01-13%2022-12-48.png)
+
 ## RestAPI Endpoints
 ****************************************************
 ### Root Url - localhost:8000
